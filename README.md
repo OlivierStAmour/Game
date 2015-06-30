@@ -1,2 +1,2 @@
-# Jeux2D
-Jeux 2D essai sur UE4
+# 
+Premier essai d'un jeux avec la librairie SDL.
