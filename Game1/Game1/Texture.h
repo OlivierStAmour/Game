@@ -9,11 +9,7 @@
 
 using namespace std;
 
-SDL_Texture* loadTexture(string path);
 
-/*Constant variables*/
-//const int SCREEN_WIDTH = 640;
-//const int SCREEN_HEIGHT = 480;
 
 //The dimensions of the dot
 static const int DOT_WIDTH = 20;
