@@ -2,8 +2,8 @@
 #include <SDL_image.h>
 #include <iostream>
 #include <string>
-#include <Texture.h>
-#include <Window.h>
+#include "Texture.h"
+#include "Window.h"
 
 using namespace std;
 
