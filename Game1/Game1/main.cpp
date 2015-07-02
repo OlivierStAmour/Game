@@ -45,7 +45,7 @@ void close()
 int main(int argc, char** argv)
 {
 	Window* window = new Window();
-	Texture* texture = new Texture("Images/texture.png");
+	Texture* texture = new Texture("Images/dot.bmp");
 	
 	//Start up SDL and create window
 	if (!init())

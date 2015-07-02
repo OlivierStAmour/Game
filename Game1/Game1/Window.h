@@ -28,7 +28,7 @@ public:
 	void close();
 
 	//Loads a texture to the renderer
-	SDL_Texture* loadTexture(string path);
+	SDL_Texture* loadTexture(string path, int& width, int& height);
 
 	//Access to window
 	SDL_Window* getWindow();

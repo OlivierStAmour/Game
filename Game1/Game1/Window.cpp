@@ -57,7 +57,7 @@ void Window::close()
 
 
 
-SDL_Texture* Window::loadTexture(string path)
+SDL_Texture* Window::loadTexture(string path, int& width, int& height)
 {
 	//The final texture
 	SDL_Texture* newTexture = NULL;
@@ -75,6 +75,12 @@ SDL_Texture* Window::loadTexture(string path)
 		{
 			cout << "Unable to create texture from " << path.c_str() << "! SDL Error: " << SDL_GetError() << endl;
 		}
+		else
+		{
+			width = loadedSurface->w;
+			height = loadedSurface->h;
+		}
+
 		//Get rid of old loaded surface
 		SDL_FreeSurface(loadedSurface);
 	}

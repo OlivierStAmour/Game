@@ -67,7 +67,7 @@ bool Texture::loadFromFile(Window* window)
 	//Loading success flag
 	bool success = true;
 	//Load PNG texture from the renderer in the window
-	texture_ = window->loadTexture(path_);
+	texture_ = window->loadTexture(path_, width_, height_);
 	if (texture_ == NULL)
 	{
 		cout << "Failed to load image!" << endl;
@@ -78,13 +78,25 @@ bool Texture::loadFromFile(Window* window)
 
 
 
-void Texture::render(Window* window)
+void Texture::render(Window* window, SDL_Rect* clip, double angle, SDL_Point* center, SDL_RendererFlip flip)
 {	
+	SDL_Rect renderQuad = { posX_, posY_, width_, height_};
+
+	//Set clip rendering dimensions
+	if (clip != NULL)
+	{
+		renderQuad.w = clip->w;
+		renderQuad.h = clip->h;
+	}
+
+	//Initialize renderer color
+	SDL_SetRenderDrawColor(window->getRenderer(), 0xFF, 0xFF, 0xFF, 0xFF);
+
 	//Clear screen
 	SDL_RenderClear(window->getRenderer());
 	
 	//Render texture to screen
-	SDL_RenderCopy(window->getRenderer(), texture_, NULL, NULL);
+	SDL_RenderCopyEx(window->getRenderer(), texture_, clip, &renderQuad, angle, center, flip);
 
 	//Update screen
 	SDL_RenderPresent(window->getRenderer());
