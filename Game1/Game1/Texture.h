@@ -16,21 +16,20 @@ static const int DOT_WIDTH = 20;
 static const int DOT_HEIGHT = 20;
 
 //The maximum velocity of the dot
-static const int DOT_VEL = 10;
+static const int MAX_VEL = 640;
 
 class Texture 
 {
 public:
-	//Default constructor
+	//Constructors
 	Texture();
-
-	Texture(string path);
+	Texture(float posX, float posY);
 
 	//Deallocates memory
 	~Texture();
 
 	//Loads image at specified path
-	bool loadFromFile(Window* window);
+	bool loadFromFile(Window* window, string path);
 
 	//Takes the key presses and adjusts the texture's velocity
 	void handleEvent(SDL_Event& e);

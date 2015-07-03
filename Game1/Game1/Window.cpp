@@ -30,7 +30,7 @@ bool Window::init()
 	else
 	{
 		//Create renderer
-		renderer_ = SDL_CreateRenderer(window_, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+		renderer_ = SDL_CreateRenderer(window_, -1, SDL_RENDERER_ACCELERATED);
 		if (renderer_ == NULL)
 		{
 			cout << "Renderer could not be created! SDL_Error: " << SDL_GetError() << endl;

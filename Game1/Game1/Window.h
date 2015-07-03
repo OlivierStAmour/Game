@@ -5,6 +5,7 @@
 #include <SDL_image.h>
 #include <iostream>
 #include <string>
+//#include <SDL_tff.h>
 
 using namespace std;
 
