@@ -8,7 +8,7 @@
 
 using namespace std;
 
-/*Prototypes*/
+/***Prototypes***/
 //Starts up SDL
 bool init();
 
@@ -42,8 +42,10 @@ int main(int argc, char** argv)
 {
 	//The main window
 	Window* window = new Window();
+
 	//The main timer
 	Timer timer;
+
 	//Start up SDL and create window
 	if (!init())
 	{
@@ -59,12 +61,13 @@ int main(int argc, char** argv)
 		else
 		{ 
 			//Create the textures
-			Texture* dot1 = new Texture(200.0, 200.0);
-			Texture* dot2 = new Texture(200.0, 400.0);
+			Texture* dot1 = new Texture(200.0, 400.0);
+			Texture* dot2 = new Texture(200.0, 200.0);
 
 			//Load the textures
 			dot1->loadFromFile(window, "Images/dot.bmp");
 			dot2->loadFromFile(window, "Images/dot.bmp");
+		
 
 			//Main loop flag
 			bool quit = false;
@@ -105,7 +108,8 @@ int main(int argc, char** argv)
 				//Render the texture on the window
 				dot1->render(window);
 				dot2->render(window);
-
+				
+			
 				//Update screen
 				SDL_RenderPresent(window->getRenderer());
 			}

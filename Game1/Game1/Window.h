@@ -25,14 +25,13 @@ public:
 
 	//Create the variables
 	bool init();
+
 	//Destroy the variables
 	void close();
 
-	//Loads a texture to the renderer
-	SDL_Texture* loadTexture(string path, int& width, int& height);
-
 	//Access to window
 	SDL_Window* getWindow();
+
 	//Access to renderer
 	SDL_Renderer* getRenderer();
 

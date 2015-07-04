@@ -56,39 +56,6 @@ void Window::close()
 }
 
 
-
-SDL_Texture* Window::loadTexture(string path, int& width, int& height)
-{
-	//The final texture
-	SDL_Texture* newTexture = NULL;
-	//Load image at specified path
-	SDL_Surface* loadedSurface = IMG_Load(path.c_str());
-	if (loadedSurface == NULL)
-	{
-		cout << "Unable to load image " << path.c_str() << "! SDL_image Error: " << IMG_GetError() << endl;
-	}
-	else
-	{
-		//Create texture from surface pixels
-		newTexture = SDL_CreateTextureFromSurface(renderer_, loadedSurface);
-		if (newTexture == NULL)
-		{
-			cout << "Unable to create texture from " << path.c_str() << "! SDL Error: " << SDL_GetError() << endl;
-		}
-		else
-		{
-			width = loadedSurface->w;
-			height = loadedSurface->h;
-		}
-
-		//Get rid of old loaded surface
-		SDL_FreeSurface(loadedSurface);
-	}
-	return newTexture;
-}
-
-
-
 SDL_Renderer* Window::getRenderer()
 {
 	return renderer_;
