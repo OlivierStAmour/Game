@@ -67,7 +67,9 @@ int main(int argc, char** argv)
 			//Load the textures
 			dot1->loadFromFile(window, "Images/dot.bmp");
 			dot2->loadFromFile(window, "Images/dot.bmp");
-		
+			
+			//Link the collision boxes
+			dot1->addCollisionBox(dot2->getCollisionBox());
 
 			//Main loop flag
 			bool quit = false;
@@ -115,9 +117,11 @@ int main(int argc, char** argv)
 			}
 			//Free ressources
 			delete dot1;
+			delete dot2;
 			delete window;
 			window = 0;
 			dot1 = 0;
+			dot2 = 0;
 		}
 	}
 

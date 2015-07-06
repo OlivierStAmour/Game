@@ -5,6 +5,7 @@
 Texture::Texture()
 {
 	texture_ = NULL;
+	collisionBox_ = NULL;
 
 	posX_ = 0.0;
 	posY_ = 0.0;
@@ -18,9 +19,12 @@ Texture::Texture()
 	path_ = "";
 }
 
+
+
 Texture::Texture(float posX, float posY)
 {
 	texture_ = NULL;
+	collisionBox_ = NULL;
 
 	posX_ = posX;
 	posY_ = posY;
@@ -35,6 +39,7 @@ Texture::Texture(float posX, float posY)
 }
 
 
+
 Texture::~Texture()
 {
 	free();
@@ -44,31 +49,23 @@ Texture::~Texture()
 
 void Texture::free()
 {
+	//Free the hardware texture
 	if (texture_ != NULL)
 	{
 		SDL_DestroyTexture(texture_);
 		texture_ = NULL;
-		posX_ = 0.0;
-		posY_ = 0.0;
-		velX_ = 0;
-		velY_ = 0;
-		width_ = 0;
-		height_ = 0;
 	}
-}
-
-
-
-void Texture::setBlendMode(SDL_BlendMode blending)
-{
-	SDL_SetTextureBlendMode(texture_, blending);
-}
-
-
-
-void Texture::setAlpha(Uint8 alpha)
-{
-	SDL_SetTextureAlphaMod(texture_, alpha);
+	//Free the collision box pointer
+	if (collisionBox_ != NULL){
+		delete collisionBox_;
+		collisionBox_ = NULL;
+	}
+	posX_ = 0.0;
+	posY_ = 0.0;
+	velX_ = 0;
+	velY_ = 0;
+	width_ = 0;
+	height_ = 0;
 }
 
 
@@ -138,12 +135,17 @@ bool Texture::loadFromFile(Window* window, string path)
 					{
 						((Uint32*)pixels_)[i] = transparent;
 					}
-				}
-				
+				}	
 				//Unlock texture to update
 				SDL_UnlockTexture(texture_);
 				pixels_ = NULL;
 				
+				//Create the collision box
+				collisionBox_ = new SDL_Rect();
+				collisionBox_->x = int(posX_);
+				collisionBox_->y = int(posY_);
+				collisionBox_->h = height_;
+				collisionBox_->w = width_;
 			}
 			//Free old formatted surface
 			SDL_FreeSurface(formattedSurface);
@@ -153,6 +155,8 @@ bool Texture::loadFromFile(Window* window, string path)
 	}
 	return success;
 }
+
+
 
 void Texture::render(Window* window, SDL_Rect* clip, double angle, SDL_Point* center, SDL_RendererFlip flip)
 {	
@@ -215,48 +219,88 @@ void Texture::handleEvent(SDL_Event& e)
 	}
 }
 
+
+
 void Texture::move(float timeStep)
 {
+	//Declare a variable for the displacement
+	float deltaX = velX_ * timeStep;
 	//Move the texture on the x axis
-	posX_ += velX_ * timeStep;
+	posX_ += deltaX;
+	collisionBox_->x = posX_;
 	//If the texture went too far on the left side of the screen
 	if (posX_ < 0) 
 	{
-		posX_ = 0;
+		posX_ -= deltaX;
+		collisionBox_->x = posX_;
 	}
 	//If the texture went too far on the right side of the screen
-	else if (posX_ > SCREEN_WIDTH - width_)
+	else if (posX_ > SCREEN_WIDTH - width_ || checkCollision())
 	{
-		posX_ = SCREEN_WIDTH - width_;
+		posX_ -= deltaX;
+		collisionBox_->x = posX_;
 	}
+	//Declare a variable for the displacement
+	float deltaY = velY_ * timeStep;
 	//Move the texture on the y axis
-	posY_ += velY_ * timeStep;
+	posY_ += deltaY;
+	collisionBox_->y = posY_;
 	//If the texture went too far up the screen
 	if (posY_ < 0) 
 	{
-		posY_ = 0;
+		posY_ -= deltaY;
+		collisionBox_->y = posY_;
 	}
 	//If the texture went too far down the screen
-	else if (posY_ > SCREEN_HEIGHT - height_)
+	else if (posY_ > SCREEN_HEIGHT - height_ || checkCollision())
 	{
-		posY_ = SCREEN_HEIGHT - height_;
+		posY_ -= deltaY;
+		collisionBox_->y = posY_;
 	}
 }
 
 
 
-int Texture::getWidth()
+bool Texture::checkCollision()
 {
-	return width_;
+	for (int i = 0; i < collisionBoxesToCheck_.size(); i++)
+	{
+		int leftA = collisionBoxesToCheck_[i]->x;
+		int rightA = collisionBoxesToCheck_[i]->x + collisionBoxesToCheck_[i]->w;
+		int upA = collisionBoxesToCheck_[i]->y;
+		int downA = collisionBoxesToCheck_[i]->y + collisionBoxesToCheck_[i]->h;
+
+		int leftB = collisionBox_->x;
+		int rightB = collisionBox_->x + collisionBox_->w;
+		int upB = collisionBox_->y;
+		int downB = collisionBox_->y + collisionBox_->h;
+
+		if (rightB <= leftA)
+		{
+			return false;
+		}
+		if (rightA <= leftB)
+		{
+			return false;
+		}
+		if (upB >= downA)
+		{
+			return false;
+		}
+		if (upA >= downB)
+		{
+			return false;
+		}
+	}
+	if (!collisionBoxesToCheck_.empty())
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
-
-
-int Texture::getHeight()
-{
-	return height_;
-}
-
-
 
 bool Texture::lockTexture()
 {
@@ -295,6 +339,56 @@ bool Texture::unlockTexture()
 		pitch_ = 0;
 	}
 	return success;
+}
+
+
+
+void Texture::addCollisionBox(SDL_Rect* collisionBox)
+{
+	collisionBoxesToCheck_.push_back(collisionBox);
+}
+
+
+
+//TODO
+void setColor(Uint8 red, Uint8 green, Uint8 blue)
+{
+
+}
+
+
+
+void Texture::setBlendMode(SDL_BlendMode blending)
+{
+	SDL_SetTextureBlendMode(texture_, blending);
+}
+
+
+
+void Texture::setAlpha(Uint8 alpha)
+{
+	SDL_SetTextureAlphaMod(texture_, alpha);
+}
+
+
+
+int Texture::getWidth()
+{
+	return width_;
+}
+
+
+
+int Texture::getHeight()
+{
+	return height_;
+}
+
+
+
+SDL_Rect* Texture::getCollisionBox()
+{
+	return collisionBox_;
 }
 
 
