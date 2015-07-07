@@ -54,6 +54,9 @@ public:
 	//Unlock the texture (Pixel manipulation not available)
 	bool unlockTexture();
 
+	//Make background transparent
+	void makeBackgroundTransparent(Window* window);
+
 	//Add a collision box to check
 	void addCollisionBox(SDL_Rect* collisionBox);
 

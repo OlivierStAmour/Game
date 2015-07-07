@@ -106,40 +106,22 @@ bool Texture::loadFromFile(Window* window, string path)
 			}
 			else
 			{
-				//Set blend mode for transparent color;
+				//Set blend mode to enable transparent color;
 				SDL_SetTextureBlendMode(texture_, SDL_BLENDMODE_BLEND);
 				
 				//Lock texture for manipulation
-				SDL_LockTexture(texture_, NULL, &pixels_, &pitch_);
+				lockTexture();
 
 				//Copy loaded/formatted surface pixels
 				memcpy(pixels_, formattedSurface->pixels, formattedSurface->pitch * formattedSurface->h);
 
+				//Unlock texture to update
+				unlockTexture();
+
 				//Get image dimensions
 				width_ = formattedSurface->w;
 				height_ = formattedSurface->h;
-				
-				//Get pixel data in editable format 
-				//pitch_ / 4 because there are 4 bytes / pixel (32 bits RGBA format)
-				int pixelCount = (pitch_ / 4) * height_;
 
-				//Get the colorkey for the first pixel (most likely the background color)
-				Uint32 colorKey = ((Uint32*)pixels_)[0];
-				//The color key for a transparent color
-				Uint32 transparent = SDL_MapRGBA(formattedSurface->format, 0xFF, 0xFF, 0xFF, 0x00);
-
-				//Make every background pixel transparent
-				for (int i = 0; i < pixelCount; i++)
-				{
-					if (((Uint32*)pixels_)[i] == colorKey)
-					{
-						((Uint32*)pixels_)[i] = transparent;
-					}
-				}	
-				//Unlock texture to update
-				SDL_UnlockTexture(texture_);
-				pixels_ = NULL;
-				
 				//Create the collision box
 				collisionBox_ = new SDL_Rect();
 				collisionBox_->x = int(posX_);
@@ -156,6 +138,38 @@ bool Texture::loadFromFile(Window* window, string path)
 	return success;
 }
 
+void Texture::makeBackgroundTransparent(Window* window)
+{
+	//Get the formatted surface from the window
+	SDL_Surface* formattedSurface = SDL_ConvertSurfaceFormat(SDL_GetWindowSurface(window->getWindow()), SDL_PIXELFORMAT_RGBA8888, NULL);
+
+	//Lock texture for pixel manipulation
+	lockTexture();
+
+	//Get pixel data in editable format 
+	//pitch_ / 4 because there are 4 bytes / pixel (32 bits RGBA format)
+	int pixelCount = (pitch_ / 4) * height_;
+
+	//Get the colorkey for the first pixel (most likely the background color)
+	Uint32 colorKey = ((Uint32*)pixels_)[0];
+
+	//The color key for a transparent color
+	Uint32 transparent = SDL_MapRGBA(formattedSurface->format, 0xFF, 0xFF, 0xFF, 0x00);
+
+	//Make every background pixel transparent
+	for (int i = 0; i < pixelCount; i++)
+	{
+		if (((Uint32*)pixels_)[i] == colorKey)
+		{
+			((Uint32*)pixels_)[i] = transparent;
+		}
+	}
+	//Unlock texture to update
+	unlockTexture();
+
+	//Free old formatted surface
+	SDL_FreeSurface(formattedSurface);
+}
 
 
 void Texture::render(Window* window, SDL_Rect* clip, double angle, SDL_Point* center, SDL_RendererFlip flip)
@@ -227,35 +241,35 @@ void Texture::move(float timeStep)
 	float deltaX = velX_ * timeStep;
 	//Move the texture on the x axis
 	posX_ += deltaX;
-	collisionBox_->x = posX_;
+	collisionBox_->x = (int)posX_;
 	//If the texture went too far on the left side of the screen
 	if (posX_ < 0) 
 	{
 		posX_ -= deltaX;
-		collisionBox_->x = posX_;
+		collisionBox_->x = (int)posX_;
 	}
 	//If the texture went too far on the right side of the screen
 	else if (posX_ > SCREEN_WIDTH - width_ || checkCollision())
 	{
 		posX_ -= deltaX;
-		collisionBox_->x = posX_;
+		collisionBox_->x = (int)posX_;
 	}
 	//Declare a variable for the displacement
 	float deltaY = velY_ * timeStep;
 	//Move the texture on the y axis
 	posY_ += deltaY;
-	collisionBox_->y = posY_;
+	collisionBox_->y = (int)posY_;
 	//If the texture went too far up the screen
 	if (posY_ < 0) 
 	{
 		posY_ -= deltaY;
-		collisionBox_->y = posY_;
+		collisionBox_->y = (int)posY_;
 	}
 	//If the texture went too far down the screen
 	else if (posY_ > SCREEN_HEIGHT - height_ || checkCollision())
 	{
 		posY_ -= deltaY;
-		collisionBox_->y = posY_;
+		collisionBox_->y = (int)posY_;
 	}
 }
 
@@ -263,7 +277,7 @@ void Texture::move(float timeStep)
 
 bool Texture::checkCollision()
 {
-	for (int i = 0; i < collisionBoxesToCheck_.size(); i++)
+	for (unsigned int i = 0; i < collisionBoxesToCheck_.size(); i++)
 	{
 		int leftA = collisionBoxesToCheck_[i]->x;
 		int rightA = collisionBoxesToCheck_[i]->x + collisionBoxesToCheck_[i]->w;
@@ -292,13 +306,13 @@ bool Texture::checkCollision()
 			return false;
 		}
 	}
-	if (!collisionBoxesToCheck_.empty())
+	if (collisionBoxesToCheck_.empty())
 	{
-		return true;
+		return false;
 	}
 	else
 	{
-		return false;
+		return true;
 	}
 }
 
