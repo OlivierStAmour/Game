@@ -13,19 +13,13 @@ using namespace std;
 
 
 
-//The dimensions of the dot
-static const int DOT_WIDTH = 20;
-static const int DOT_HEIGHT = 20;
-
-//The maximum velocity of the dot
-static const int MAX_VEL = 640;
 
 class Texture 
 {
 public:
 	//Constructors
 	Texture();
-	Texture(float posX, float posY);
+	Texture(Window* window, float posX, float posY);
 
 	//Deallocates memory
 	~Texture();
@@ -34,10 +28,10 @@ public:
 	void free();
 
 	//Loads image at specified path
-	bool loadFromFile(Window* window, string path);
+	bool loadFromFile(string path);
 
 	//Shows the texture on the window
-	void render(Window* window, SDL_Rect* clip = NULL, double angle = 0.0, SDL_Point* center = NULL, SDL_RendererFlip flip = SDL_FLIP_NONE);
+	void render(SDL_Rect* clip = NULL, double angle = 0.0, SDL_Point* center = NULL, SDL_RendererFlip flip = SDL_FLIP_NONE);
 
 	//Takes the key presses and adjusts the texture's velocity
 	void handleEvent(SDL_Event& e);
@@ -55,7 +49,7 @@ public:
 	bool unlockTexture();
 
 	//Make background transparent
-	void makeBackgroundTransparent(Window* window);
+	void makeBackgroundTransparent();
 
 	//Add a collision box to check
 	void addCollisionBox(SDL_Rect* collisionBox);
@@ -84,6 +78,9 @@ public:
 
 private:
 	
+	//The window in 
+	Window* window_;
+
 	//Collision box of the texture
 	SDL_Rect* collisionBox_;
 
@@ -97,6 +94,7 @@ private:
 
 	//Position of the texture on the x and y axis 
 	float posX_, posY_;
+
 	//Velocity of the texture on the x and y axis
 	float velX_, velY_;
 

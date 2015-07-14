@@ -4,6 +4,8 @@
 
 Texture::Texture()
 {
+	window_ = 0;
+	
 	texture_ = NULL;
 	collisionBox_ = NULL;
 
@@ -21,7 +23,7 @@ Texture::Texture()
 
 
 
-Texture::Texture(float posX, float posY)
+Texture::Texture(Window* window, float posX, float posY) : window_(window)
 {
 	texture_ = NULL;
 	collisionBox_ = NULL;
@@ -56,10 +58,14 @@ void Texture::free()
 		texture_ = NULL;
 	}
 	//Free the collision box pointer
-	if (collisionBox_ != NULL){
+	if (collisionBox_ != NULL)
+	{
 		delete collisionBox_;
 		collisionBox_ = NULL;
 	}
+
+	window_ = NULL;
+
 	posX_ = 0.0;
 	posY_ = 0.0;
 	velX_ = 0;
@@ -70,7 +76,7 @@ void Texture::free()
 
 
 
-bool Texture::loadFromFile(Window* window, string path)
+bool Texture::loadFromFile(string path)
 {
 	//Loading success flag
 	bool success = true;
@@ -98,7 +104,7 @@ bool Texture::loadFromFile(Window* window, string path)
 		else
 		{
 			//Create blank streamable texture
-			texture_ = SDL_CreateTexture(window->getRenderer(), SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, formattedSurface->w, formattedSurface->h);
+			texture_ = SDL_CreateTexture(window_->getRenderer(), SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, formattedSurface->w, formattedSurface->h);
 			if (texture_ == NULL)
 			{
 				cout << "Unable to create blank texture! SDL Error: " << SDL_GetError() << endl;
@@ -138,10 +144,10 @@ bool Texture::loadFromFile(Window* window, string path)
 	return success;
 }
 
-void Texture::makeBackgroundTransparent(Window* window)
+void Texture::makeBackgroundTransparent()
 {
 	//Get the formatted surface from the window
-	SDL_Surface* formattedSurface = SDL_ConvertSurfaceFormat(SDL_GetWindowSurface(window->getWindow()), SDL_PIXELFORMAT_RGBA8888, NULL);
+	SDL_Surface* formattedSurface = SDL_ConvertSurfaceFormat(SDL_GetWindowSurface(window_->getWindow()), SDL_PIXELFORMAT_RGBA8888, NULL);
 
 	//Lock texture for pixel manipulation
 	lockTexture();
@@ -172,10 +178,15 @@ void Texture::makeBackgroundTransparent(Window* window)
 }
 
 
-void Texture::render(Window* window, SDL_Rect* clip, double angle, SDL_Point* center, SDL_RendererFlip flip)
+void Texture::render(SDL_Rect* clip, double angle, SDL_Point* center, SDL_RendererFlip flip)
 {	
-	SDL_Rect renderQuad = { (int)posX_, (int)posY_, (int)width_, (int)height_};
-
+	//The relative position of the texture to the camera
+	int relPosX = posX_ - window_->getCamera()->x;
+	int relPosY = posY_ - window_->getCamera()->y;
+	
+	//Renderquad using 
+	SDL_Rect renderQuad = {relPosX, relPosY, (int)width_, (int)height_};
+	
 	//Set clip rendering dimensions
 	if (clip != NULL)
 	{
@@ -184,7 +195,7 @@ void Texture::render(Window* window, SDL_Rect* clip, double angle, SDL_Point* ce
 	}
 
 	//Render texture to screen
-	SDL_RenderCopyEx(window->getRenderer(), texture_, clip, &renderQuad, angle, center, flip);
+	SDL_RenderCopyEx(window_->getRenderer(), texture_, clip, &renderQuad, angle, center, flip);
 }
 
 
@@ -249,7 +260,7 @@ void Texture::move(float timeStep)
 		collisionBox_->x = (int)posX_;
 	}
 	//If the texture went too far on the right side of the screen
-	else if (posX_ > SCREEN_WIDTH - width_ || checkCollision())
+	else if (posX_ > LEVEL_WIDTH - width_ || checkCollision())
 	{
 		posX_ -= deltaX;
 		collisionBox_->x = (int)posX_;
@@ -266,11 +277,13 @@ void Texture::move(float timeStep)
 		collisionBox_->y = (int)posY_;
 	}
 	//If the texture went too far down the screen
-	else if (posY_ > SCREEN_HEIGHT - height_ || checkCollision())
+	else if (posY_ > LEVEL_HEIGHT - height_ || checkCollision())
 	{
 		posY_ -= deltaY;
 		collisionBox_->y = (int)posY_;
 	}
+	//Move the camera
+	window_->moveCamera(posX_, posY_);
 }
 
 

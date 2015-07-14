@@ -61,16 +61,18 @@ int main(int argc, char** argv)
 		else
 		{ 
 			//Create the textures
-			Texture* dot1 = new Texture(200.0, 400.0);
-			Texture* dot2 = new Texture(200.0, 200.0);
-			Texture* background = new Texture();
+			Texture* dot1 = new Texture(window, 200.0, 400.0);
+			Texture* dot2 = new Texture(window, 200.0, 200.0);
+			Texture* background = new Texture(window, 0, 0);
 
 			//Load the textures
-			dot1->loadFromFile(window, "Images/dot.bmp");
-			dot2->loadFromFile(window, "Images/dot.bmp");
-			dot1->makeBackgroundTransparent(window);
-			dot2->makeBackgroundTransparent(window);
-			background->loadFromFile(window, "Images/background_game_test.jpg");
+			dot1->loadFromFile("Images/dot.bmp");
+			dot2->loadFromFile("Images/dot.bmp");
+			background->loadFromFile("Images/bg.png");
+
+			//Make the background transparent for the dots
+			dot1->makeBackgroundTransparent();
+			dot2->makeBackgroundTransparent();
 			
 			//Link the collision boxes
 			dot1->addCollisionBox(dot2->getCollisionBox());
@@ -111,12 +113,11 @@ int main(int argc, char** argv)
 				//Clear screen
 				SDL_RenderClear(window->getRenderer());
 
-				//Render the texture on the window
-				background->render(window);
-				dot1->render(window);
-				dot2->render(window);
+				//Render the textures on the window
+				background->render();
+				dot1->render();
+				dot2->render();
 				
-			
 				//Update screen
 				SDL_RenderPresent(window->getRenderer());
 			}
