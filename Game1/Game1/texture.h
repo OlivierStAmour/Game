@@ -6,7 +6,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include "Window.h"
+#include "window.h"
 
 
 using namespace std;
