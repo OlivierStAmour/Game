@@ -1,7 +1,7 @@
 #ifndef SPRITE
 #define SPRITE
 
-#include "Texture.h"
+#include "texture.h"
 
 class Sprite : public Texture
 {
