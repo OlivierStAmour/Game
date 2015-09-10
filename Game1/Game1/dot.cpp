@@ -1,4 +1,4 @@
-#include "Dot.h"
+#include "dot.h"
 
 Dot::Dot()
 {
