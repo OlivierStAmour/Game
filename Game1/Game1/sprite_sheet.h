@@ -1,8 +1,8 @@
 #ifndef SPRITESHEET
 #define SPRITESHEET
 
-#include "Texture.h"
-#include "Sprite.h"
+#include "texture.h"
+#include "sprite.h"
 
 const int N_MAX_CLIPS = 10;
 
