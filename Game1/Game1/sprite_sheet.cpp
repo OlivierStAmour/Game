@@ -1,4 +1,4 @@
-#include "SpriteSheet.h"
+#include "sprite_sheet.h"
 
 
 SpriteSheet::SpriteSheet()
