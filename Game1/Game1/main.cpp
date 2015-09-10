@@ -2,7 +2,9 @@
 #include <SDL_image.h>
 #include <iostream>
 #include <string>
+#include "Character.h"
 #include "Texture.h"
+#include "SpriteSheet.h"
 #include "Window.h"
 #include "Timer.h"
 
@@ -61,11 +63,13 @@ int main(int argc, char** argv)
 		else
 		{ 
 			//Create the textures
+			Character* test = new Character(window, 300.0, 400.0);
 			Texture* dot1 = new Texture(window, 200.0, 400.0);
 			Texture* dot2 = new Texture(window, 200.0, 200.0);
 			Texture* background = new Texture(window, 0, 0);
 
 			//Load the textures
+			test->getSpriteSheet()->loadFromFile("Images/Luffy.png");
 			dot1->loadFromFile("Images/dot.bmp");
 			dot2->loadFromFile("Images/dot.bmp");
 			background->loadFromFile("Images/bg.png");
@@ -73,6 +77,7 @@ int main(int argc, char** argv)
 			//Make the background transparent for the dots
 			dot1->makeBackgroundTransparent();
 			dot2->makeBackgroundTransparent();
+			test->getSpriteSheet()->makeBackgroundTransparent();
 			
 			//Link the collision boxes
 			dot1->addCollisionBox(dot2->getCollisionBox());
@@ -115,6 +120,7 @@ int main(int argc, char** argv)
 
 				//Render the textures on the window
 				background->render();
+				test->getSpriteSheet()->render();
 				dot1->render();
 				dot2->render();
 				
@@ -122,6 +128,7 @@ int main(int argc, char** argv)
 				SDL_RenderPresent(window->getRenderer());
 			}
 			//Free ressources
+			//delete test;
 			delete dot1;
 			delete dot2;
 			delete window;

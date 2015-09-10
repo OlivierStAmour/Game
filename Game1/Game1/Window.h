@@ -39,7 +39,7 @@ public:
 	//Move camera
 	void moveCamera(float texturePositionX, float texturePositionY);
 
-	//Destroy the variables
+	//Destroy attributes
 	void close();
 
 	//Access to window

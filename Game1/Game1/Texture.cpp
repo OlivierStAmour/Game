@@ -25,6 +25,8 @@ Texture::Texture()
 
 Texture::Texture(Window* window, float posX, float posY) : window_(window)
 {
+	window_ = window;
+	
 	texture_ = NULL;
 	collisionBox_ = NULL;
 
@@ -292,6 +294,7 @@ bool Texture::checkCollision()
 {
 	for (unsigned int i = 0; i < collisionBoxesToCheck_.size(); i++)
 	{
+
 		int leftA = collisionBoxesToCheck_[i]->x;
 		int rightA = collisionBoxesToCheck_[i]->x + collisionBoxesToCheck_[i]->w;
 		int upA = collisionBoxesToCheck_[i]->y;
@@ -302,18 +305,22 @@ bool Texture::checkCollision()
 		int upB = collisionBox_->y;
 		int downB = collisionBox_->y + collisionBox_->h;
 
+		//Check right side for collision
 		if (rightB <= leftA)
 		{
 			return false;
 		}
+		//Check left side for collision
 		if (rightA <= leftB)
 		{
 			return false;
 		}
+		//Check up side for collision
 		if (upB >= downA)
 		{
 			return false;
 		}
+		//Checker down side for collision
 		if (upA >= downB)
 		{
 			return false;

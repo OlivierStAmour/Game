@@ -76,9 +76,9 @@ public:
 	//Access to the pitch of the texture
 	int getPitch();
 
-private:
+protected:
 	
-	//The window in 
+	//The window that renders the texture
 	Window* window_;
 
 	//Collision box of the texture
