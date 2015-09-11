@@ -1,7 +1,7 @@
 #ifndef CHARACTER
 #define CHARACTER
 
-#include "SpriteSheet.h"
+#include "sprite_sheet.h"
 
 class Character
 {

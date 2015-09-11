@@ -1,4 +1,5 @@
-#include "Character.h"
+#include "character.h"
+#include "sprite_sheet.h"
 
 Character::Character()
 {
