@@ -1,2 +1,2 @@
-# Game1
+# Game
 First game.
